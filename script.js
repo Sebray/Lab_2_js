@@ -43,40 +43,40 @@ const setValueFromInputs = (parent) =>{
   }
 }
 
-const createButton =(className, text) =>{
+const createButton = (className, text) =>{
   const button = document.createElement('button');          
   button.innerText=text;
   button.className=className;
   return button;
 }
 
+const performEditSubtask = (target) =>{
+  if(target == null)
+    return;
+
+  const parent = upToUsingTagName(target, 'tr');
+  createInputs(parent);
+  const button = createButton ("b_add", "добавить");
+  const p = target.parentElement;
+  target.remove();
+  p.insertAdjacentElement('afterbegin', button);
+  
+  button.addEventListener('click', {
+    handleEvent(event) {
+      if(consistsOfEmptyInput(parent)){
+        alert("Есть пустая строка");
+        return;
+      }
+      setValueFromInputs(parent);
+    
+      const p = event.target.parentElement;
+      event.target.remove();
+      p.insertAdjacentElement('afterbegin', createButton("b_edit", "изменить"));
+    }
+  });
+} 
 
 table.onclick = function(event){
   const target = event.target.closest(".b_edit");
-
-  if(target != null){
-    const parent = upToUsingTagName(target, 'tr');
-    createInputs(parent);
-
-    const button = createButton ("b_add", "добавить");
-    const p = target.parentElement;
-    target.remove();
-    p.insertAdjacentElement('afterbegin', button);
-    
-    button.addEventListener('click', {
-      handleEvent(event) {
-        debugger;
-        if(consistsOfEmptyInput(parent)){
-          alert("Есть пустая строка");
-          return;
-        }
-
-        setValueFromInputs(parent);
-        
-        const p = event.target.parentElement;
-        event.target.remove();
-        p.insertAdjacentElement('afterbegin', createButton("b_edit", "изменить"));
-      }
-    });
-  }
+  performEditSubtask(target);
 }
