@@ -117,7 +117,7 @@ const performPopUpSubtask = (target) =>{
 }
 
 table.onclick = function(event){
-  const target = event.target.closest(".b_show");
+  target = event.target.closest(".b_show");
   if (target != null){
     performPopUpSubtask(target);
     return;
