@@ -28,6 +28,59 @@ const upToUsingTagName = (el, tagName) =>{
  return null;
 }
 
+const createInputs = (parent) =>{
+  for(let i = 0; i < parent.cells.length - 1; i++){
+    parent.cells[i].innerText = "";
+    const input = document.createElement('input');
+    input.type='text';
+    parent.cells[i].appendChild(input);
+  }
+}
+
+const consistsOfEmptyInput = (parent) =>{
+  for(let i = 0; i < parent.cells.length - 1; i++){
+    if(parent.cells[i].firstChild.value == "")
+      return true;
+  }
+  return false;
+}
+
+const setValueFromInputs = (parent) =>{
+  for(let i = 0; i < parent.cells.length - 1; i++){
+    parent.cells[i].innerText = parent.cells[i].firstChild.value;
+  }
+}
+
+const createButton = (className, text) =>{
+  const button = document.createElement('button');          
+  button.innerText=text;
+  button.className=className;
+  return button;
+}
+
+const performEditSubtask = (target) =>{
+  const parent = upToUsingTagName(target, 'tr');
+  createInputs(parent);
+  const button = createButton ("b_add", "добавить");
+  const p = target.parentElement;
+  target.remove();
+  p.insertAdjacentElement('afterbegin', button);
+  
+  button.addEventListener('click', {
+    handleEvent(event) {
+      if(consistsOfEmptyInput(parent)){
+        alert("Есть пустая строка");
+        return;
+      }
+      setValueFromInputs(parent);
+    
+      const p = event.target.parentElement;
+      event.target.remove();
+      p.insertAdjacentElement('afterbegin', createButton("b_edit", "изменить"));
+    }
+  });
+} 
+
 const createPopUp = (str) =>{
 
   const popup = document.createElement('div');
@@ -56,9 +109,6 @@ const createPopUp = (str) =>{
 }
 
 const performPopUpSubtask = (target) =>{
-  if(target == null)
-    return;
-  
   const parent = upToUsingTagName(target, 'tr');
   const strOfRecord = getStrFromRecord(parent);
   
@@ -68,5 +118,14 @@ const performPopUpSubtask = (target) =>{
 
 table.onclick = function(event){
   const target = event.target.closest(".b_show");
-  performPopUpSubtask(target);
+  if (target != null){
+    performPopUpSubtask(target);
+    return;
+  }
+  
+  target = event.target.closest(".b_edit");
+  if(target != null){
+  performEditSubtask(target);
+  return;
+  }
 }
